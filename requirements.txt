@@ -1,3 +1,4 @@
 requests==2.32.3
 spotify==0.10.2
 spotipy==2.24.0
+python-dotenv==1.0.1
