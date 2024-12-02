@@ -1,6 +1,6 @@
 myenv/
-   *.pyc
-   __pycache__/
+*.pyc
+__pycache__/
 
 # 환경 변수 파일 .env 추가
 .env

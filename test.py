@@ -1,23 +1,12 @@
-import RPi.GPIO as GPIO
-import time
+import re
 
-# GPIO 핀 설정
-LED_PIN = 17  # 사용할 GPIO 핀 번호 (BCM 모드 기준)
+def detect_speed(input_text):
+    if re.search(r"빠ㄹ(?:르|른|르게)?", input_text):
+        return "빠름"  # "빠ㄹ"이 포함된 경우
+    else:
+        return "느림"  # "빠ㄹ"이 없으면 느림으로 처리
 
-GPIO.setmode(GPIO.BCM)  # BCM 모드 사용
-GPIO.setup(LED_PIN, GPIO.OUT)  # 핀을 출력 모드로 설정
-print("Program started")
-# 이후 코드
-
-try:
-    while True:
-        GPIO.output(LED_PIN, GPIO.HIGH)  # LED 켜기
-        print("LED ON")
-        time.sleep(1)  # 1초 대ls
-        GPIO.output(LED_PIN, GPIO.LOW)  # LED 끄기
-        print("LED OFF")
-        time.sleep(1)  # 1초 대기
-except KeyboardInterrupt:
-    print("프로그램 종료")
-finally:
-    GPIO.cleanup()  # GPIO 핀 초기화
+# 테스트
+input_text = "이 노래는 빠르게 뛰어놀 수 있을 것 같아요"
+speed = detect_speed(input_text)
+print(f"속도: {speed}")
