@@ -2,10 +2,4 @@ requests==2.32.3
 spotify==0.10.2
 spotipy==2.24.0
 python-dotenv==1.0.1
-flak 1.4.2
-pip install SpeechRecognition pyaudio
-sudo apt-get install portaudio19-dev python3-pyaudio
-(pyaudio 설치가 안 되어서 필수 빌드 도구들 설치)
-sudo apt-get update
-sudo apt-get install flac
-(FLAK 유틸리티 설치)
+flak==1.4.2
