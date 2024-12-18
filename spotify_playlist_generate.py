@@ -5,13 +5,14 @@ from dotenv import load_dotenv
 import os
 import random
 from spotipy.exceptions import SpotifyException
-
+import openai
 load_dotenv()
-
+# OpenAI API 설정
+openai.api_key = os.getenv('OPENAI_API_KEY')
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
-from dotenv import load_dotenv
+
 
 # 환경 변수 로드
 load_dotenv()
@@ -101,3 +102,54 @@ def generate_playlist_based_on_sentiment(sentiment_score):
         return None
 
     return create_playlist_with_tracks(track_ids)
+
+
+def generate_playlist_based_on_valence(valence_score):
+
+    # Step 2: GPT API로 노래 제목 추천
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a music recommendation assistant."},
+            {"role": "user", "content": f"Recommend 5 existing songs for an emotion score of {valence_score}. Only Provide both the song titles and their artists. Ensure these songs are available on Spotify."}
+        ],
+        max_tokens=100
+    )
+
+    # GPT 응답 파싱
+    song_list = response.choices[0].message.content.split("\n")
+    songs = [line.split("by") for line in song_list if "by" in line]
+    songs = [{"title": song[0].strip(), "artist": song[1].strip()} for song in songs]
+
+    # GPT로부터 추천받은 노래 제목 추출
+    song_titles = response.choices[0].message.content.split("\n")
+    song_titles = [title.strip() for title in song_titles if title.strip()]
+    print("Recommended Songs:", song_titles)
+
+    # Spotify에서 노래 검색 및 URI 추출
+    song_uris = []
+    for song in songs:
+        query = f"{song['title']} {song['artist']}"
+        results = sp.search(q=query, type="track", limit=1)
+        if results['tracks']['items']:
+            song_uri = results['tracks']['items'][0]['uri']
+            song_uris.append(song_uri)
+            print(f"Found: {song['title']} by {song['artist']}")
+
+    # 플레이리스트 생성 및 URL 반환
+    if song_uris:
+        user_id = sp.current_user()['id']
+        playlist = sp.user_playlist_create(user=user_id, name="Valence Playlist", public=False)
+        sp.playlist_add_items(playlist_id=playlist['id'], items=song_uris)
+
+        # 생성된 플레이리스트 URL 가져오기
+        playlist_url = playlist['external_urls']['spotify']
+        print(f"Playlist URL: {playlist_url}")
+        return playlist_url
+        # Spotify 웹 플레이어로 열기
+        #webbrowser.open(playlist_url)
+    else:
+        print("No songs found on Spotify.")
+        return None
+
+

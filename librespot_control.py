@@ -5,7 +5,14 @@ import spotipy
 
 def start_librespot():
     """librespot 명령어를 실행하는 함수 (비동기 처리)"""
-    command = ["../librespot/target/release/librespot", "-n", "TuneMate", "-b", "160", "-c", "./cache"]
+    command = [
+    "../librespot/target/release/librespot",
+    "-n", "TuneMate",
+    "-b", "160",
+    "-c", "./cache",
+    "--device", "default:CARD=UACDemoV10"
+]
+
     
     # subprocess로 librespot 실행
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -50,3 +57,5 @@ def terminate_librespot(process):
         # process.kill()  
     else:
         print("No process to terminate.")
+
+
